@@ -1,7 +1,11 @@
 import { TextField } from '@mui/material'
 import { Button } from '@mui/material'
+import { useState } from 'react'
+import axios from 'axios'
 
 function Login({ setLoginModal }) {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   return (
     <div
       style={{ transform: 'translate(-50%, -50%)' }}
@@ -10,10 +14,16 @@ function Login({ setLoginModal }) {
       <div className='text-[30px]'>Login</div>
       <div>
         <div className='mt-[10px]'>
-          <TextField className='w-[300px]' label='Email' variant='standard' />
+          <TextField
+            onChange={(e) => setEmail(e.target.value)}
+            className='w-[300px]'
+            label='Email'
+            variant='standard'
+          />
         </div>
         <div className='mt-[10px] mb-[20px]'>
           <TextField
+            onChange={(e) => setPassword(e.target.value)}
             className='w-[300px]'
             type='password'
             label='Password'
@@ -28,7 +38,16 @@ function Login({ setLoginModal }) {
         >
           Already have an account? Login.
         </div>
-        <Button variant='outlined'>Login</Button>
+        <Button
+          onClick={() => {
+            axios.post('http://localhost:8080/login',{email: email,password: password})
+              .then(data=>console.log(data.data))
+              .catch(err=>console.error(err))
+          }}
+          variant='outlined'
+        >
+          Login
+        </Button>
       </div>
     </div>
   )
