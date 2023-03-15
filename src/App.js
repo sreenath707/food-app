@@ -1,16 +1,37 @@
 import Navbar from './Navbar'
 import Body from './Body'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Login from './components/Molecules/Login'
 import Signup from './components/Molecules/Signup'
 import { Modal } from '@mui/material'
+import axios from 'axios'
 
 function App() {
+  const [user, setUser] = useState(null)
+  function applyUser() {
+    axios
+      .post('http://localhost:8080/user', {
+        token: localStorage.getItem('token'),
+      })
+      .then((data) => {
+        setUser(data.data)
+      })
+      .catch((err) => console.error(err))
+  }
+  useEffect(() => {
+    applyUser()
+  }, [])
+
+  function logout() {
+    localStorage.setItem('token', null)
+    setUser(null)
+  }
+
   const [LoginModal, setLoginModal] = useState(false)
   const [isModal, setIsModal] = useState(false)
   return (
     <>
-      <Navbar setIsModal={setIsModal} />
+      <Navbar user={user} setIsModal={setIsModal} logout={logout} />
       <Body />
       <Modal
         open={isModal}
@@ -19,9 +40,9 @@ function App() {
         }}
       >
         {LoginModal ? (
-          <Login setLoginModal={setLoginModal} />
+          <Login setIsModal={setIsModal} applyUser={applyUser} setLoginModal={setLoginModal} />
         ) : (
-          <Signup setLoginModal={setLoginModal} />
+          <Signup setIsModal={setIsModal} applyUser={applyUser} setLoginModal={setLoginModal} />
         )}
       </Modal>
     </>

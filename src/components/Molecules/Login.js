@@ -3,9 +3,11 @@ import { Button } from '@mui/material'
 import { useState } from 'react'
 import axios from 'axios'
 
-function Login({ setLoginModal }) {
+function Login({ setLoginModal, applyUser, setIsModal }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+
   return (
     <div
       style={{ transform: 'translate(-50%, -50%)' }}
@@ -38,11 +40,27 @@ function Login({ setLoginModal }) {
         >
           Already have an account? Login.
         </div>
+        {errorMessage && <div>{errorMessage}</div>}
         <Button
           onClick={() => {
-            axios.post('http://localhost:8080/login',{email: email,password: password})
-              .then(data=>console.log(data.data))
-              .catch(err=>console.error(err))
+            axios
+              .post('http://localhost:8080/login', {
+                email: email,
+                password: password,
+              })
+              .then((data) => {
+                const obj = data.data
+                console.log(obj)
+                if (obj.loggedIn) {
+                  localStorage.setItem('token', obj.token)
+                  setErrorMessage(null)
+                  applyUser();
+                  setIsModal(false);
+                } else {
+                  setErrorMessage(obj.msg)
+                }
+              })
+              .catch((err) => console.error(err))
           }}
           variant='outlined'
         >
