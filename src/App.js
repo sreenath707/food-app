@@ -6,6 +6,8 @@ import Signup from './components/Molecules/Signup'
 import { Modal } from '@mui/material'
 import axios from 'axios'
 import { ApolloClient, gql, InMemoryCache } from '@apollo/client'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Profile from './components/Molecules/Profile'
 
 const client = new ApolloClient({
   uri: 'http://localhost:8080/graphql',
@@ -27,20 +29,22 @@ function App() {
   }
   useEffect(() => {
     applyUser()
-    client.query({
-      query: gql`
-        {
-        food{
-          name,
-          image,
-          cost,
-          rating,
-          description,
-        }}
-      `,
-    })
-    .then(data=>setFoodList(data.data.food))
-    .catch(err=>console.log(err));
+    client
+      .query({
+        query: gql`
+          {
+            food {
+              name
+              image
+              cost
+              rating
+              description
+            }
+          }
+        `,
+      })
+      .then((data) => setFoodList(data.data.food))
+      .catch((err) => console.log(err))
   }, [])
 
   function logout() {
@@ -51,9 +55,12 @@ function App() {
   const [LoginModal, setLoginModal] = useState(false)
   const [isModal, setIsModal] = useState(false)
   return (
-    <>
+    <BrowserRouter>
       <Navbar user={user} setIsModal={setIsModal} logout={logout} />
-      <Body foodList={foodList} />
+      <Routes>
+        <Route path='/' element={<Body foodList={foodList} />} />
+        <Route path='profile' element={<Profile user={user}/>} />
+      </Routes>
       <Modal
         open={isModal}
         onClose={() => {
@@ -74,7 +81,7 @@ function App() {
           />
         )}
       </Modal>
-    </>
+    </BrowserRouter>
   )
 }
 
