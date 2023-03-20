@@ -1,13 +1,32 @@
-import { TextField } from '@mui/material'
-import { Button } from '@mui/material'
 import { useState } from 'react'
 import axios from 'axios'
+import { Button, Form, Input } from 'antd'
+import { LockOutlined, UserOutlined, MailOutlined } from '@ant-design/icons'
 
 function Signup({ setLoginModal, setIsModal, applyUser }) {
-  const [email, setEmail] = useState('')
-  const [userName, setUserName] = useState('')
-  const [password, setPassword] = useState('')
-  const [errorMessage,setErrorMessage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null)
+
+  function onFinish(obj) {
+    const { email, username, password } = obj
+    axios
+      .post('http://localhost:8080/signup', {
+        username: username,
+        email: email,
+        password: password,
+      })
+      .then((data) => {
+        let obj = data.data
+        if (obj.signUpSuccess) {
+          localStorage.setItem('token', obj.token)
+          applyUser()
+          setErrorMessage(null)
+          setIsModal(false)
+        } else {
+          setErrorMessage(obj.msg)
+        }
+      })
+      .catch((err) => console.error(err))
+  }
 
   return (
     <div
@@ -15,60 +34,58 @@ function Signup({ setLoginModal, setIsModal, applyUser }) {
       className='p-[20px] absolute top-[50%] left-[50%] bg-gray-100 w-[500px]'
     >
       <div className='text-[30px]'>Sign Up</div>
-      <div>
-        <div className='mt-[10px]'>
-          <TextField
-            onChange={(e) => setUserName(e.target.value)}
-            className='w-[300px]'
-            label='User name'
-            variant='standard'
-          />
-        </div>
-        <div className='mt-[10px]'>
-          <TextField
-            onChange={(e) => setEmail(e.target.value)}
-            className='w-[300px]'
-            label='Email'
-            variant='standard'
-          />
-        </div>
-        <div className='mt-[10px] mb-[10px]'>
-          <TextField
-            onChange={(e) => setPassword(e.target.value)}
-            className='w-[300px]'
-            type='password'
-            label='Password'
-            variant='standard'
-          />
-        </div>
-        <div
-          className='cursor-pointer text-[14px] text-blue-800 mb-[10px]'
-          onClick={() => {
-            setLoginModal(true)
-          }}
+      <Form
+        name='normal_login'
+        className='login-form w-[350px]'
+        initialValues={{ remember: true }}
+        onFinish={onFinish}
+      >
+        <Form.Item
+          name='username'
+          rules={[{ required: true, message: 'Please input your Email!' }]}
         >
-          Already have an account? Login.
-        </div>
-        {errorMessage && <div>{errorMessage}</div>}
-        <Button onClick={() => {
-          axios.post("http://localhost:8080/signup",{username:userName,email: email,password: password})
-            .then(data=>{
-              let obj = data.data;
-              if(obj.signUpSuccess){
-                localStorage.setItem('token',obj.token)
-                applyUser();
-                setErrorMessage(null);
-                setIsModal(false)
-              }
-              else{
-                setErrorMessage(obj.msg)
-              }
-            })
-            .catch(err=>console.error(err))
-        }} variant='outlined'>
-          Sign up
-        </Button>
-      </div>
+          <Input
+            prefix={<UserOutlined className='site-form-item-icon' />}
+            placeholder='Username'
+          />
+        </Form.Item>
+        <Form.Item
+          name='email'
+          rules={[{ required: true, message: 'Please input your Email!' }]}
+        >
+          <Input
+            prefix={<MailOutlined className='site-form-item-icon' />}
+            placeholder='Email'
+          />
+        </Form.Item>
+        <Form.Item
+          name='password'
+          rules={[{ required: true, message: 'Please input your Password!' }]}
+        >
+          <Input
+            prefix={<LockOutlined className='site-form-item-icon' />}
+            type='password'
+            placeholder='Password'
+          />
+        </Form.Item>
+        {errorMessage && errorMessage}
+        <Form.Item>
+          <Button type='primary' htmlType='submit' className='bg-[#1677ff]'>
+            Sign Up
+          </Button>
+          <div className='mt-[10px]'>
+            <div
+              onClick={(e) => {
+                e.preventDefault()
+                setLoginModal(true)
+              }}
+              className='cursor-pointer login-form-forgot text-[#1677ff]'
+            >
+              Already have an account? Login
+            </div>
+          </div>
+        </Form.Item>
+      </Form>
     </div>
   )
 }

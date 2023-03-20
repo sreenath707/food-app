@@ -5,9 +5,16 @@ import Login from './components/Molecules/Login'
 import Signup from './components/Molecules/Signup'
 import { Modal } from '@mui/material'
 import axios from 'axios'
+import { ApolloClient, gql, InMemoryCache } from '@apollo/client'
+
+const client = new ApolloClient({
+  uri: 'http://localhost:8080/graphql',
+  cache: new InMemoryCache(),
+})
 
 function App() {
   const [user, setUser] = useState(null)
+  const [foodList, setFoodList] = useState([])
   function applyUser() {
     axios
       .post('http://localhost:8080/user', {
@@ -20,6 +27,20 @@ function App() {
   }
   useEffect(() => {
     applyUser()
+    client.query({
+      query: gql`
+        {
+        food{
+          name,
+          image,
+          cost,
+          rating,
+          description,
+        }}
+      `,
+    })
+    .then(data=>setFoodList(data.data.food))
+    .catch(err=>console.log(err));
   }, [])
 
   function logout() {
@@ -32,7 +53,7 @@ function App() {
   return (
     <>
       <Navbar user={user} setIsModal={setIsModal} logout={logout} />
-      <Body />
+      <Body foodList={foodList} />
       <Modal
         open={isModal}
         onClose={() => {
@@ -40,9 +61,17 @@ function App() {
         }}
       >
         {LoginModal ? (
-          <Login setIsModal={setIsModal} applyUser={applyUser} setLoginModal={setLoginModal} />
+          <Login
+            setIsModal={setIsModal}
+            applyUser={applyUser}
+            setLoginModal={setLoginModal}
+          />
         ) : (
-          <Signup setIsModal={setIsModal} applyUser={applyUser} setLoginModal={setLoginModal} />
+          <Signup
+            setIsModal={setIsModal}
+            applyUser={applyUser}
+            setLoginModal={setLoginModal}
+          />
         )}
       </Modal>
     </>

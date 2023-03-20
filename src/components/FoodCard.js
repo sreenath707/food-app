@@ -11,10 +11,10 @@ function FoodCard({ food }) {
         }}
         className='rounded-[5px] overflow-hidden bg-gray-100'
       >
-        <img className='w-full h-150px' alt='food-img' src={food.image} />
+        <img className='w-full h-[200px]' alt='food-img' src={food.image} />
         <div className='px-[10px] py-[10px]'>
           <div className='flex justify-between'>
-            <div>{food.title}</div>
+            <div>{food.name}</div>
             <div>${food.cost}</div>
           </div>
           <div className='text-[12px] text-gray-700'>{food.description}</div>
