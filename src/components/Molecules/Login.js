@@ -17,7 +17,8 @@ function Login({ setLoginModal, applyUser, setIsModal }) {
         const obj = data.data
         console.log(obj)
         if (obj.loggedIn) {
-          localStorage.setItem('token', obj.token)
+          localStorage.setItem('token', obj.token);
+          localStorage.setItem('refreshToken', obj.refreshToken);
           setErrorMessage(null)
           applyUser()
           setIsModal(false)

@@ -49,6 +49,7 @@ function App() {
 
   function logout() {
     localStorage.setItem('token', null)
+    localStorage.setItem('refreshToken',null);
     setUser(null)
   }
 

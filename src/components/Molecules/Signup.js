@@ -18,6 +18,7 @@ function Signup({ setLoginModal, setIsModal, applyUser }) {
         let obj = data.data
         if (obj.signUpSuccess) {
           localStorage.setItem('token', obj.token)
+          localStorage.setItem('refreshToken', obj.refreshToken);
           applyUser()
           setErrorMessage(null)
           setIsModal(false)
