@@ -1,34 +1,32 @@
-import Navbar from './Navbar'
-import Body from './Body'
-import { useState, useEffect } from 'react'
-import Login from './components/Molecules/Login'
-import Signup from './components/Molecules/Signup'
-import { Modal } from '@mui/material'
-import axios from 'axios'
-import { ApolloClient, gql, InMemoryCache } from '@apollo/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Profile from './components/Molecules/Profile'
+import Navbar from "./Navbar";
+import Body from "./Body";
+import { useState, useEffect } from "react";
+import Login from "./components/Molecules/Login";
+import Signup from "./components/Molecules/Signup";
+import { Modal } from "@mui/material";
+import { ApolloClient, gql, InMemoryCache } from "@apollo/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Profile from "./components/Molecules/Profile";
+import useUser from "./hooks/useUser";
+import { AxiosPrivate } from "./utils/Axios";
 
 const client = new ApolloClient({
-  uri: 'http://localhost:8080/graphql',
+  uri: "http://localhost:8080/graphql",
   cache: new InMemoryCache(),
-})
+});
 
 function App() {
-  const [user, setUser] = useState(null)
-  const [foodList, setFoodList] = useState([])
+  const { setUser } = useUser();
+  const [foodList, setFoodList] = useState([]);
   function applyUser() {
-    axios
-      .post('http://localhost:8080/user', {
-        token: localStorage.getItem('token'),
-      })
+    AxiosPrivate.post("/user")
       .then((data) => {
-        setUser(data.data)
+        setUser(data.data);
       })
-      .catch((err) => console.error(err))
+      .catch((err) => console.error(err));
   }
   useEffect(() => {
-    applyUser()
+    applyUser();
     client
       .query({
         query: gql`
@@ -44,28 +42,28 @@ function App() {
         `,
       })
       .then((data) => setFoodList(data.data.food))
-      .catch((err) => console.log(err))
-  }, [])
+      .catch((err) => console.log(err));
+  }, []);
 
   function logout() {
-    localStorage.setItem('token', null)
-    localStorage.setItem('refreshToken',null);
-    setUser(null)
+    localStorage.setItem("token", null);
+    localStorage.setItem("refreshToken", null);
+    setUser(null);
   }
 
-  const [LoginModal, setLoginModal] = useState(false)
-  const [isModal, setIsModal] = useState(false)
+  const [LoginModal, setLoginModal] = useState(false);
+  const [isModal, setIsModal] = useState(false);
   return (
     <BrowserRouter>
-      <Navbar user={user} setIsModal={setIsModal} logout={logout} />
+      <Navbar setIsModal={setIsModal} logout={logout} />
       <Routes>
-        <Route path='/' element={<Body foodList={foodList} />} />
-        <Route path='profile' element={<Profile user={user}/>} />
+        <Route path="/" element={<Body foodList={foodList} />} />
+        <Route path="profile" element={<Profile />} />
       </Routes>
       <Modal
         open={isModal}
         onClose={() => {
-          setIsModal(false)
+          setIsModal(false);
         }}
       >
         {LoginModal ? (
@@ -83,7 +81,7 @@ function App() {
         )}
       </Modal>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;
