@@ -17,7 +17,7 @@ const client = new ApolloClient({
 
 function App() {
   const { setUser, setLoading } = useUser();
-  const [foodList, setFoodList] = useState([]);
+  const [foodList, setFoodList] = useState({ data: [], loading: true });
   function applyUser() {
     setLoading(true);
     AxiosPrivate.post("/user")
@@ -49,6 +49,7 @@ function App() {
     );
   }
   useEffect(() => {
+    setFoodList((prev) => ({ ...prev, loading: true }));
     AttachInterceptors();
     applyUser();
     client
@@ -65,8 +66,11 @@ function App() {
           }
         `,
       })
-      .then((data) => setFoodList(data.data.food))
-      .catch((err) => console.log(err));
+      .then((data) => setFoodList({ data: data.data.food, loading: false }))
+      .catch((err) => {
+        setFoodList({ data: [], loading: false });
+        console.log(err);
+      });
   }, []);
 
   function logout() {
