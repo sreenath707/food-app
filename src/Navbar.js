@@ -2,11 +2,11 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SettingsIcon from "@mui/icons-material/Settings";
 import PersonIcon from "@mui/icons-material/Person";
-import { Dropdown, Button } from "antd";
+import { Dropdown, Button, Skeleton } from "antd";
 import useUser from "./hooks/useUser";
 
 function Navbar({ setIsModal, logout }) {
-  const { user } = useUser();
+  const { user, loading } = useUser();
 
   const items = [
     {
@@ -43,7 +43,9 @@ function Navbar({ setIsModal, logout }) {
   return (
     <div className="px-[10px] bg-gray-100 h-[70px] flex items-center justify-between">
       <div>logo</div>
-      {!user ? (
+      {loading ? (
+        <Skeleton.Avatar loading active shape="circle" />
+      ) : !user ? (
         <Button
           type="primary"
           className="bg-[#1677ff]"

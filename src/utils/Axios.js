@@ -6,5 +6,4 @@ export const AxiosReq = axios.create({
 
 export const AxiosPrivate = axios.create({
   baseURL: "http://localhost:8080",
-  headers: { token: `bearer ${localStorage.getItem("token")}` },
 });

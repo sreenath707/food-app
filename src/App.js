@@ -8,7 +8,7 @@ import { ApolloClient, gql, InMemoryCache } from "@apollo/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Profile from "./components/Molecules/Profile";
 import useUser from "./hooks/useUser";
-import { AxiosPrivate } from "./utils/Axios";
+import { AxiosPrivate, AxiosReq } from "./utils/Axios";
 
 const client = new ApolloClient({
   uri: "http://localhost:8080/graphql",
@@ -16,16 +16,40 @@ const client = new ApolloClient({
 });
 
 function App() {
-  const { setUser } = useUser();
+  const { setUser, setLoading } = useUser();
   const [foodList, setFoodList] = useState([]);
   function applyUser() {
+    setLoading(true);
     AxiosPrivate.post("/user")
       .then((data) => {
         setUser(data.data);
+        setLoading(false);
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
+  }
+  function AttachInterceptors() {
+    AxiosPrivate.interceptors.request.use((request) => {
+      request.headers = {
+        token: `bearer ${localStorage.getItem("token")}`,
+      };
+      return request;
+    });
+
+    AxiosPrivate.interceptors.request.use(
+      (response) => {
+        console.log("this is response", response);
+        return response;
+      },
+      (err) => {
+        console.log("request error", err);
+      }
+    );
   }
   useEffect(() => {
+    AttachInterceptors();
     applyUser();
     client
       .query({
@@ -46,8 +70,8 @@ function App() {
   }, []);
 
   function logout() {
-    localStorage.setItem("token", null);
-    localStorage.setItem("refreshToken", null);
+    localStorage.setItem("token", "");
+    localStorage.setItem("refreshToken", "");
     setUser(null);
   }
 

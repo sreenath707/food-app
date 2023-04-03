@@ -6,9 +6,12 @@ export const userSetContext = createContext();
 
 function UserProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   return (
-    <userContext.Provider value={user}>
-      <userSetContext.Provider value={setUser}>
+    <userContext.Provider value={{ user: user, loading: loading }}>
+      <userSetContext.Provider
+        value={{ setUser: setUser, setLoading: setLoading }}
+      >
         {children}
       </userSetContext.Provider>
     </userContext.Provider>

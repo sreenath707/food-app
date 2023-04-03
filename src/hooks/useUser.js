@@ -2,10 +2,15 @@ import { useContext } from "react";
 import { userContext, userSetContext } from "../context/userContext";
 
 function useUser() {
-  const user = useContext(userContext);
-  const setUser = useContext(userSetContext);
+  const userObj = useContext(userContext);
+  const setObj = useContext(userSetContext);
 
-  return { user, setUser };
+  return {
+    user: userObj.user,
+    setUser: setObj.setUser,
+    loading: userObj.loading,
+    setLoading: setObj.setLoading,
+  };
 }
 
 export default useUser;
