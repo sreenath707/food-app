@@ -23,7 +23,9 @@ function Navbar({ setIsModal, logout }) {
       label: (
         <div className="w-[100px] cursor-pointer flex items-center gap-3">
           <PersonIcon />
-          <div>Profile</div>
+          <div>
+            <a href="/profile">Profile</a>
+          </div>
         </div>
       ),
     },
@@ -42,7 +44,9 @@ function Navbar({ setIsModal, logout }) {
   ];
   return (
     <div className="px-[10px] bg-gray-100 h-[70px] flex items-center justify-between">
-      <div>logo</div>
+      <div>
+        <a href="/">logo</a>
+      </div>
       {loading ? (
         <Skeleton.Avatar loading active shape="circle" />
       ) : !user ? (
